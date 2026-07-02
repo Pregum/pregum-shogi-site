@@ -29,11 +29,20 @@
   --font-display: 'Shippori Mincho B1', serif;
   --font-body: 'Zen Kaku Gothic New', sans-serif;
 
-  --cell: clamp(34px, 8.2vmin, 54px);
+  /* スマホ縦持ちでは幅いっぱい(9.3vw)、PC・横持ちでは画面高さ基準(8.2vh)で盤サイズを決める */
+  --cell: clamp(30px, min(9.3vw, 8.2vh), 54px);
 }
 
 * {
   box-sizing: border-box;
+  /* タップ時にOS標準の青いハイライトを光らせない */
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  /* 連続タップでのダブルタップズーム誤発動を防ぐ */
+  touch-action: manipulation;
 }
 
 html,
@@ -522,6 +531,15 @@ input::placeholder {
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(227, 169, 79, 0.18);
+}
+
+.board-grid,
+.hand-row,
+.file-labels,
+.rank-labels {
+  /* 盤・持ち駒の長押しで文字選択が発動しないようにする */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .board-grid {
