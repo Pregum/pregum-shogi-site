@@ -11,7 +11,7 @@ export interface RoomState {
   send: (msg: ClientMsg) => void;
 }
 
-export function useRoom(roomId: string, name: string): RoomState {
+export function useRoom(roomId: string, name: string, timeControl?: number | null): RoomState {
   const [game, setGame] = useState<GameSnapshot | null>(null);
   const [you, setYou] = useState<Color | null>(null);
   const [connected, setConnected] = useState(false);
@@ -30,7 +30,14 @@ export function useRoom(roomId: string, name: string): RoomState {
       ws.onopen = () => {
         retry = 0;
         setConnected(true);
-        ws.send(JSON.stringify({ type: 'join', token: getToken(), name } satisfies ClientMsg));
+        ws.send(
+          JSON.stringify({
+            type: 'join',
+            token: getToken(),
+            name,
+            timeControl: timeControl ?? undefined,
+          } satisfies ClientMsg),
+        );
       };
       ws.onmessage = (e) => {
         try {

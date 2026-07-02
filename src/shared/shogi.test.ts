@@ -3,12 +3,14 @@ import {
   GOTE,
   SENTE,
   applyMove,
+  checkRepetition,
   emptyHand,
   idx,
   initialPosition,
   legalMoves,
   outcome,
   replay,
+  replayAll,
   type Move,
   type Position,
 } from './shogi';
@@ -146,6 +148,48 @@ describe('棋譜表記', () => {
     ];
     const jp = movesToJp(moves);
     expect(jp[3]).toBe('同　角(22)');
+  });
+});
+
+describe('千日手', () => {
+  it('同一局面4回で千日手(引き分け)', () => {
+    // 両者の玉を往復させて初期局面を4回出現させる
+    const cycle: Move[] = [
+      { from: { file: 5, rank: 9 }, to: { file: 5, rank: 8 }, promote: false }, // ▲５八玉
+      { from: { file: 5, rank: 1 }, to: { file: 5, rank: 2 }, promote: false }, // △５二玉
+      { from: { file: 5, rank: 8 }, to: { file: 5, rank: 9 }, promote: false }, // ▲５九玉
+      { from: { file: 5, rank: 2 }, to: { file: 5, rank: 1 }, promote: false }, // △５一玉
+    ];
+    const moves = [...cycle, ...cycle, ...cycle];
+    const positions = replayAll(moves);
+    const rep = checkRepetition(positions);
+    expect(rep.repetition).toBe(true);
+    expect(rep.perpetual).toBe(null);
+
+    // 3回目まで(8手)では千日手にならない
+    expect(checkRepetition(replayAll(moves.slice(0, 8))).repetition).toBe(false);
+  });
+
+  it('連続王手の千日手は王手側の負け', () => {
+    // 後手玉５一、先手飛４九。飛が５筋⇔４筋で王手を繰り返し、玉が往復する
+    const start = emptyPosition();
+    start.board[idx(5, 1)] = { type: 'OU', color: GOTE };
+    start.board[idx(4, 9)] = { type: 'HI', color: SENTE };
+    start.board[idx(9, 9)] = { type: 'OU', color: SENTE };
+
+    const cycle: Move[] = [
+      { from: { file: 4, rank: 9 }, to: { file: 5, rank: 9 }, promote: false }, // ▲５九飛(王手)
+      { from: { file: 5, rank: 1 }, to: { file: 4, rank: 1 }, promote: false }, // △４一玉
+      { from: { file: 5, rank: 9 }, to: { file: 4, rank: 9 }, promote: false }, // ▲４九飛(王手)
+      { from: { file: 4, rank: 1 }, to: { file: 5, rank: 1 }, promote: false }, // △５一玉
+    ];
+    const positions: Position[] = [start];
+    for (const m of [...cycle, ...cycle, ...cycle]) {
+      positions.push(applyMove(positions[positions.length - 1], m));
+    }
+    const rep = checkRepetition(positions);
+    expect(rep.repetition).toBe(true);
+    expect(rep.perpetual).toBe(SENTE); // 王手をかけ続けた先手の負け
   });
 });
 

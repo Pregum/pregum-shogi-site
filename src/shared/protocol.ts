@@ -12,9 +12,23 @@ export interface PendingRequest {
   by: Color;
 }
 
+export type EndReason =
+  | 'checkmate'
+  | 'stalemate'
+  | 'resign'
+  | 'timeout'
+  | 'sennichite' // 千日手(引き分け)
+  | 'perpetual'; // 連続王手の千日手(王手側の負け)
+
 export interface GameResult {
   winner: Color | null;
-  reason: 'checkmate' | 'stalemate' | 'resign';
+  reason: EndReason;
+}
+
+export interface ClockState {
+  remaining: [number, number]; // 残り時間(ms) [先手, 後手]
+  turnStartedAt: number; // 現在の手番が始まったサーバー時刻(epoch ms)
+  serverNow: number; // スナップショット送信時のサーバー時刻(クロックずれ補正用)
 }
 
 export interface GameSnapshot {
@@ -27,10 +41,12 @@ export interface GameSnapshot {
   result: GameResult | null;
   startedAt: string;
   gameNo: number; // 再戦のたびに増える
+  timeControl: number | null; // 持ち時間(分)。null = 時間無制限
+  clock: ClockState | null;
 }
 
 export type ClientMsg =
-  | { type: 'join'; token: string; name: string }
+  | { type: 'join'; token: string; name: string; timeControl?: number | null }
   | { type: 'move'; move: Move }
   | { type: 'matta'; action: 'request' | 'accept' | 'reject' }
   | { type: 'rematch'; action: 'request' | 'accept' | 'reject' }

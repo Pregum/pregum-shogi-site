@@ -71,12 +71,20 @@ export function movesToJp(moves: Move[]): string[] {
   return out;
 }
 
+export type KifEndReason =
+  | 'checkmate'
+  | 'stalemate'
+  | 'resign'
+  | 'timeout'
+  | 'sennichite'
+  | 'perpetual';
+
 export interface KifMeta {
   senteName: string;
   goteName: string;
   startedAt?: string; // ISO 文字列
   winner?: Color | null;
-  endReason?: 'checkmate' | 'stalemate' | 'resign' | null;
+  endReason?: KifEndReason | null;
 }
 
 export function toKif(moves: Move[], meta: KifMeta): string {
@@ -98,13 +106,22 @@ export function toKif(moves: Move[], meta: KifMeta): string {
     lines.push(`${String(i + 1).padStart(4, ' ')} ${jp[i]}   ( 0:00/00:00:00)`);
   }
 
-  if (meta.endReason === 'resign') {
-    lines.push(`${String(jp.length + 1).padStart(4, ' ')} 投了   ( 0:00/00:00:00)`);
-  } else if (meta.endReason === 'checkmate' || meta.endReason === 'stalemate') {
-    lines.push(`${String(jp.length + 1).padStart(4, ' ')} 詰み   ( 0:00/00:00:00)`);
+  const endLine: Partial<Record<KifEndReason, string>> = {
+    resign: '投了',
+    checkmate: '詰み',
+    stalemate: '詰み',
+    timeout: '切れ負け',
+    sennichite: '千日手',
+    perpetual: '反則負け', // 連続王手の千日手
+  };
+  const label = meta.endReason ? endLine[meta.endReason] : undefined;
+  if (label) {
+    lines.push(`${String(jp.length + 1).padStart(4, ' ')} ${label}   ( 0:00/00:00:00)`);
   }
-  if (meta.winner === 0 || meta.winner === 1) {
-    const n = meta.endReason === 'resign' || meta.endReason ? jp.length + 1 : jp.length;
+  if (meta.endReason === 'sennichite') {
+    lines.push(`まで${jp.length + 1}手で千日手`);
+  } else if (meta.winner === 0 || meta.winner === 1) {
+    const n = label ? jp.length + 1 : jp.length;
     lines.push(`まで${n}手で${meta.winner === SENTE ? '先手' : '後手'}の勝ち`);
   }
   return lines.join('\n') + '\n';

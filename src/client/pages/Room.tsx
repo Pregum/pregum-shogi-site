@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Color, Move } from '../../shared/shogi';
 import { GOTE, SENTE, isInCheck, replay } from '../../shared/shogi';
 import { movesToJp } from '../../shared/kif';
 import { Board } from '../components/Board';
 import { FoxMark } from '../components/FoxMark';
 import { Link } from '../lib/router';
+import { playCheck, playEnd, playMove } from '../lib/sound';
 import {
+  REASON_JP,
   downloadKif,
   getPlayerName,
   saveKifu,
@@ -60,13 +62,64 @@ export function Room({ roomId }: { roomId: string }) {
   return <RoomInner roomId={roomId} name={name.trim() || '名無しの狐'} />;
 }
 
+function formatClock(ms: number): string {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
 function RoomInner({ roomId, name }: { roomId: string; name: string }) {
-  const { game, you, connected, error, send } = useRoom(roomId, name);
+  // 部屋の作成者だけが持ち時間の設定を持ってくる(ホームで選択)
+  const [timeControl] = useState<number | null>(() => {
+    const raw = sessionStorage.getItem('kitsune-shogi:pending-tc');
+    sessionStorage.removeItem('kitsune-shogi:pending-tc');
+    return raw ? Number(raw) : null;
+  });
+  const { game, you, connected, error, send } = useRoom(roomId, name, timeControl);
   const [copied, setCopied] = useState(false);
   const [confirmResign, setConfirmResign] = useState(false);
 
   const pos = useMemo(() => (game ? replay(game.moves) : null), [game]);
   const jpMoves = useMemo(() => (game ? movesToJp(game.moves) : []), [game]);
+
+  // 時計: スナップショット受信時刻を覚えて残り時間を進める
+  const clockInfo = useMemo(
+    () => (game?.clock ? { ...game.clock, receivedAt: Date.now() } : null),
+    [game],
+  );
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!clockInfo || game?.status !== 'playing') return;
+    const t = setInterval(() => setTick((n) => n + 1), 500);
+    return () => clearInterval(t);
+  }, [clockInfo, game?.status]);
+
+  const remainingMs = (color: Color): number | null => {
+    if (!clockInfo || !game || !pos) return null;
+    let ms = clockInfo.remaining[color];
+    if (game.status === 'playing' && pos.turn === color) {
+      const elapsedAtServer = clockInfo.serverNow - clockInfo.turnStartedAt;
+      ms -= elapsedAtServer + (Date.now() - clockInfo.receivedAt);
+    }
+    return Math.max(0, ms);
+  };
+
+  // 効果音
+  const prevRef = useRef<{ len: number; status: string } | null>(null);
+  useEffect(() => {
+    if (!game || !pos) return;
+    const prev = prevRef.current;
+    prevRef.current = { len: game.moves.length, status: game.status };
+    if (!prev) return;
+    if (game.moves.length > prev.len) {
+      playMove();
+      if (game.status === 'playing' && isInCheck(pos, pos.turn)) playCheck();
+    }
+    if (game.status === 'ended' && prev.status !== 'ended' && game.result) {
+      playEnd(you !== null && game.result.winner === you);
+    }
+  }, [game, pos, you]);
 
   // 対局終了時に棋譜を自動保存
   useEffect(() => {
@@ -123,11 +176,12 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
     if (waiting) return '対戦相手を待っています…';
     if (game.status === 'ended' && game.result) {
       const w = game.result.winner;
-      const winnerName = w === null ? null : (game.players[w]?.name ?? (w === SENTE ? '先手' : '後手'));
-      const how = game.result.reason === 'resign' ? '投了' : '詰み';
+      const how = REASON_JP[game.result.reason] ?? game.result.reason;
+      if (w === null) return `引き分けです（${how}）`;
+      const winnerName = game.players[w]?.name ?? (w === SENTE ? '先手' : '後手');
       if (you !== null && w === you) return `🎉 あなたの勝ちです（${how}）`;
-      if (you !== null && w !== null) return `負けました…（${how}）`;
-      return winnerName ? `${winnerName} の勝ち（${how}）` : '引き分け';
+      if (you !== null) return `負けました…（${how}）`;
+      return `${winnerName} の勝ち（${how}）`;
     }
     if (myTurn) return check ? '⚠️ 王手されています！ あなたの番です' : 'あなたの番です';
     if (isPlayer) return check ? '王手！ 相手の番です' : '相手の番です';
@@ -142,6 +196,7 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
           color={(1 - viewpoint) as Color}
           online={game.online[(1 - viewpoint) as Color]}
           active={game.status === 'playing' && pos.turn !== viewpoint}
+          clockMs={remainingMs((1 - viewpoint) as Color)}
         />
 
         <Board
@@ -157,6 +212,7 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
           color={viewpoint}
           online={isPlayer ? true : game.online[viewpoint]}
           active={game.status === 'playing' && pos.turn === viewpoint}
+          clockMs={remainingMs(viewpoint)}
         />
       </div>
 
@@ -167,7 +223,10 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
 
         {waiting && (
           <div className="invite-card">
-            <p>このURLを相手に送ると対局が始まります</p>
+            <p>
+              このURLを相手に送ると対局が始まります
+              {game.timeControl ? `（持ち時間 ${game.timeControl}分）` : ''}
+            </p>
             <div className="invite-url">{location.href}</div>
             <button className="btn btn-primary" onClick={copyUrl}>
               {copied ? '✓ コピーしました' : 'URLをコピー'}
@@ -310,16 +369,23 @@ function PlayerBar({
   color,
   online,
   active,
+  clockMs,
 }: {
   name: string;
   color: Color;
   online: boolean;
   active: boolean;
+  clockMs?: number | null;
 }) {
   return (
     <div className={`player-bar ${active ? 'is-active' : ''}`}>
       <span className="player-mark">{color === SENTE ? '☗ 先手' : '☖ 後手'}</span>
       <span className="player-name">{name}</span>
+      {clockMs !== null && clockMs !== undefined && (
+        <span className={`player-clock ${clockMs < 30_000 ? 'is-danger' : ''}`}>
+          {formatClock(clockMs)}
+        </span>
+      )}
       <span className={`online-dot ${online ? 'is-on' : ''}`} title={online ? 'オンライン' : 'オフライン'} />
     </div>
   );

@@ -333,6 +333,12 @@ function pseudoDrops(pos: Position): Move[] {
   return out;
 }
 
+// 自殺手・打ち歩詰めを除外しない高速な候補手生成(AIの探索用)。
+// 王を取る手が生成されうる前提で使うこと。
+export function pseudoMoves(pos: Position): Move[] {
+  return [...pseudoBoardMoves(pos), ...pseudoDrops(pos)];
+}
+
 export function legalMoves(pos: Position, checkUchifuzume = true): Move[] {
   const me = pos.turn;
   const opp = (1 - me) as Color;
@@ -382,6 +388,54 @@ export function replay(moves: Move[]): Position {
   let pos = initialPosition();
   for (const m of moves) pos = applyMove(pos, m);
   return pos;
+}
+
+// 千日手判定用の局面キー(盤面+持ち駒+手番)
+export function positionKey(pos: Position): string {
+  const cells: string[] = [];
+  for (let i = 0; i < 81; i++) {
+    const p = pos.board[i];
+    cells.push(p ? `${p.color}${p.type}` : '.');
+  }
+  const hands = pos.hands
+    .map((h) => HAND_ORDER.map((b) => h[b]).join(','))
+    .join('/');
+  return `${cells.join(',')}|${hands}|${pos.turn}`;
+}
+
+export interface RepetitionResult {
+  repetition: boolean;
+  // 連続王手の千日手を仕掛けた側(=負ける側)。通常の千日手なら null
+  perpetual: Color | null;
+}
+
+// 最終局面と同一の局面が4回出現したら千日手。
+// その間、一方の指し手がすべて王手なら「連続王手の千日手」でその側の負け。
+export function checkRepetition(positions: Position[]): RepetitionResult {
+  const last = positions.length - 1;
+  if (last < 1) return { repetition: false, perpetual: null };
+  const key = positionKey(positions[last]);
+  const occurrences: number[] = [];
+  for (let i = 0; i <= last; i++) {
+    if (positionKey(positions[i]) === key) occurrences.push(i);
+  }
+  if (occurrences.length < 4) return { repetition: false, perpetual: null };
+
+  const from = occurrences[0];
+  for (const color of [SENTE, GOTE] as Color[]) {
+    let moved = false;
+    let allChecks = true;
+    for (let i = from; i < last; i++) {
+      if (i % 2 !== color) continue; // i手目(0始まり)の手番
+      moved = true;
+      if (!isInCheck(positions[i + 1], (1 - color) as Color)) {
+        allChecks = false;
+        break;
+      }
+    }
+    if (moved && allChecks) return { repetition: true, perpetual: color };
+  }
+  return { repetition: true, perpetual: null };
 }
 
 export function replayAll(moves: Move[]): Position[] {

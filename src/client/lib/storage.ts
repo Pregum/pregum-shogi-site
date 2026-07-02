@@ -1,6 +1,6 @@
 // localStorage への棋譜・プレイヤー情報の保存
 import type { Color, Move } from '../../shared/shogi';
-import { toKif } from '../../shared/kif';
+import { toKif, type KifEndReason } from '../../shared/kif';
 
 const KIFU_KEY = 'kitsune-shogi:kifu';
 const NAME_KEY = 'kitsune-shogi:name';
@@ -15,7 +15,7 @@ export interface KifuRecord {
   gote: string;
   moves: Move[];
   winner: Color | null;
-  reason: 'checkmate' | 'stalemate' | 'resign';
+  reason: KifEndReason;
 }
 
 export function listKifu(): KifuRecord[] {
@@ -83,17 +83,21 @@ export function getToken(): string {
   return token;
 }
 
+export const REASON_JP: Record<string, string> = {
+  resign: '投了',
+  checkmate: '詰み',
+  stalemate: '手詰まり',
+  timeout: '時間切れ',
+  sennichite: '千日手',
+  perpetual: '連続王手の千日手',
+};
+
 export function resultLabel(record: {
   winner: Color | null;
   reason: string;
 }): string {
-  const reasonJp =
-    record.reason === 'resign'
-      ? '投了'
-      : record.reason === 'checkmate'
-        ? '詰み'
-        : '手詰まり';
+  const reasonJp = REASON_JP[record.reason] ?? record.reason;
   if (record.winner === 0) return `先手勝ち（${reasonJp}）`;
   if (record.winner === 1) return `後手勝ち（${reasonJp}）`;
-  return '引き分け';
+  return `引き分け（${reasonJp}）`;
 }

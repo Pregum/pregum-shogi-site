@@ -3,9 +3,17 @@ import { FoxMark, ToriiMark } from '../components/FoxMark';
 import { Link, navigate } from '../lib/router';
 import { getPlayerName, listKifu, setPlayerName } from '../lib/storage';
 
+const TIME_CHOICES: { label: string; value: number | null }[] = [
+  { label: 'なし', value: null },
+  { label: '5分', value: 5 },
+  { label: '10分', value: 10 },
+  { label: '30分', value: 30 },
+];
+
 export function Home() {
   const [name, setName] = useState(getPlayerName());
   const [joinId, setJoinId] = useState('');
+  const [timeControl, setTimeControl] = useState<number | null>(null);
   const [creating, setCreating] = useState(false);
   const kifuCount = listKifu().length;
 
@@ -15,6 +23,11 @@ export function Home() {
     try {
       const res = await fetch('/api/rooms', { method: 'POST' });
       const data = (await res.json()) as { roomId: string };
+      if (timeControl) {
+        sessionStorage.setItem('kitsune-shogi:pending-tc', String(timeControl));
+      } else {
+        sessionStorage.removeItem('kitsune-shogi:pending-tc');
+      }
       navigate(`/room/${data.roomId}`);
     } catch {
       setCreating(false);
@@ -63,6 +76,21 @@ export function Home() {
             />
           </label>
 
+          <div className="field">
+            <span className="field-label">持ち時間（切れ負け）</span>
+            <div className="segmented">
+              {TIME_CHOICES.map((c) => (
+                <button
+                  key={c.label}
+                  className={timeControl === c.value ? 'is-active' : ''}
+                  onClick={() => setTimeControl(c.value)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <button className="btn btn-primary btn-lg" onClick={createRoom} disabled={creating}>
             {creating ? '社を建てています…' : '⛩ 対局部屋を作る'}
           </button>
@@ -85,7 +113,25 @@ export function Home() {
           </div>
         </div>
 
-        <div className="hero-links reveal" style={{ ['--d' as string]: '320ms' }}>
+        <div className="mode-links reveal" style={{ ['--d' as string]: '320ms' }}>
+          <Link to="/cpu" className="mode-card">
+            <span className="mode-icon">🤖</span>
+            <span className="mode-name">CPUと対局</span>
+            <span className="mode-desc">1人で腕試し</span>
+          </Link>
+          <Link to="/practice" className="mode-card">
+            <span className="mode-icon">🎓</span>
+            <span className="mode-name">練習盤</span>
+            <span className="mode-desc">自由に駒を動かす</span>
+          </Link>
+          <Link to="/rules" className="mode-card">
+            <span className="mode-icon">📖</span>
+            <span className="mode-name">遊び方</span>
+            <span className="mode-desc">ルールと操作方法</span>
+          </Link>
+        </div>
+
+        <div className="hero-links reveal" style={{ ['--d' as string]: '400ms' }}>
           <Link to="/kifu" className="kifu-link">
             📜 棋譜庫を開く{kifuCount > 0 ? `（${kifuCount}局）` : ''}
           </Link>
@@ -99,7 +145,7 @@ export function Home() {
           <ToriiMark size={22} />
         </div>
         <p>
-          対人戦・待った・棋譜保存（KIF形式）対応 ／ 棋譜はブラウザに保存されます
+          対人戦・CPU対戦・待った・持ち時間・棋譜保存（KIF形式）対応 ／ 棋譜はブラウザに保存されます
         </p>
       </footer>
     </div>
