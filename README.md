@@ -5,6 +5,8 @@
 
 **🦊 デモ: https://pregum-shogi.pregum-dev.workers.dev**
 
+![デモ: 部屋の作成から対局・成り・持ち駒打ち・棋譜再生まで](docs/demo.gif)
+
 ## 機能
 
 - **オンライン対人戦** — ルームURL共有方式。アカウント登録不要
