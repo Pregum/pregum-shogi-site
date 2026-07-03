@@ -11,6 +11,7 @@ import {
 import { movesToJp } from '../../shared/kif';
 import { AI_NAMES, chooseMove, type AiLevel } from '../lib/ai';
 import { Board } from '../components/Board';
+import { useFormationBanner } from '../components/FormationBanner';
 import { FoxMark } from '../components/FoxMark';
 import { Link } from '../lib/router';
 import { playCheck, playEnd, playMove } from '../lib/sound';
@@ -87,6 +88,9 @@ function CpuGame({ level, name, onExit }: { level: AiLevel; name: string; onExit
 
   const check = !result && isInCheck(pos, pos.turn);
   const humanTurn = !result && pos.turn === SENTE && !thinking;
+
+  // 囲い完成エフェクト(もう一局でリセット)
+  const formationBanner = useFormationBanner(pos, gameIdRef.current, [name, aiName]);
 
   // 終局判定(詰み・千日手)
   const judge = (nextPositions: typeof positions): GameResult | null => {
@@ -278,6 +282,8 @@ function CpuGame({ level, name, onExit }: { level: AiLevel; name: string; onExit
           </div>
         )}
       </aside>
+
+      {formationBanner}
     </div>
   );
 }

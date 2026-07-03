@@ -86,3 +86,11 @@ export function playEnd(win: boolean) {
   const notes = win ? [523, 659, 784, 1047] : [392, 330, 262];
   notes.forEach((f, i) => beep(f, i * 0.14, 0.25, 0.14));
 }
+
+// 囲い完成のファンファーレ(琴風の上昇アルペジオ)
+export function playFormation() {
+  if (!soundEnabled()) return;
+  const notes = [587, 698, 880, 1175];
+  notes.forEach((f, i) => beep(f, i * 0.1, 0.45, 0.12));
+  beep(1760, 0.42, 0.6, 0.06, 'sine');
+}

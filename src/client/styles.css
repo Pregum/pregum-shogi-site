@@ -1156,13 +1156,14 @@ input::placeholder {
 
 .mode-links {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 26px;
   width: min(420px, 92vw);
 }
 
 .mode-card {
-  flex: 1;
+  flex: 1 1 calc(50% - 12px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1365,6 +1366,175 @@ input::placeholder {
 
 .rules-actions {
   margin-top: 8px;
+}
+
+/* ---------- 囲い完成エフェクト ---------- */
+
+.formation-banner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 70;
+}
+
+.formation-banner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 52px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(224, 80, 42, 0.25), transparent 70%),
+    linear-gradient(165deg, rgba(46, 28, 20, 0.96), rgba(23, 16, 9, 0.96));
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  box-shadow:
+    0 0 60px rgba(227, 169, 79, 0.45),
+    0 30px 80px rgba(0, 0, 0, 0.6);
+  animation: formation-pop 3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.formation-player {
+  font-size: 13px;
+  color: var(--cream-dim);
+  letter-spacing: 0.1em;
+}
+
+.formation-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(30px, 7vw, 46px);
+  letter-spacing: 0.22em;
+  background: linear-gradient(180deg, var(--cream) 30%, var(--gold) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.formation-done {
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--vermilion-bright);
+  letter-spacing: 0.4em;
+  margin-right: -0.4em;
+}
+
+@keyframes formation-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-2deg);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  18% {
+    transform: scale(1);
+  }
+  84% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+/* ---------- 勉強画面 ---------- */
+
+.study-page {
+  max-width: 960px;
+}
+
+.study-section {
+  margin-bottom: 34px;
+}
+
+.study-heading {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  margin: 0 0 4px;
+}
+
+.study-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.lesson-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
+  gap: 18px;
+}
+
+.lesson-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lesson-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: var(--cream);
+}
+
+.lesson-summary {
+  font-size: 12.5px;
+  color: var(--cream-dim);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.lesson-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  --cell: clamp(24px, 6.8vw, 34px);
+}
+
+.lesson-caption {
+  min-height: 4.6em;
+  font-size: 13px;
+  color: var(--cream-dim);
+  line-height: 1.65;
+  margin: 0;
+  width: 100%;
+  background: rgba(23, 16, 9, 0.55);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.lesson-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lesson-play {
+  min-width: 104px;
+}
+
+.lesson-counter {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 44px;
+  text-align: right;
 }
 
 /* ---------- ヘッダー ---------- */

@@ -8,6 +8,7 @@ import { KifuList, KifuView } from './pages/Kifu';
 import { Practice } from './pages/Practice';
 import { Room } from './pages/Room';
 import { Rules } from './pages/Rules';
+import { Study } from './pages/Study';
 
 function SoundToggle() {
   const [on, setOn] = useState(soundEnabled());
@@ -46,6 +47,8 @@ export function App() {
     page = <Practice />;
   } else if (path === '/rules') {
     page = <Rules />;
+  } else if (path === '/study') {
+    page = <Study />;
   } else {
     page = <Home />;
     isHome = true;

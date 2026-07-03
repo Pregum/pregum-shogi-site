@@ -124,6 +124,11 @@ export function Home() {
             <span className="mode-name">練習盤</span>
             <span className="mode-desc">自由に駒を動かす</span>
           </Link>
+          <Link to="/study" className="mode-card">
+            <span className="mode-icon">📚</span>
+            <span className="mode-name">手筋を学ぶ</span>
+            <span className="mode-desc">動く盤面で覚える</span>
+          </Link>
           <Link to="/rules" className="mode-card">
             <span className="mode-icon">📖</span>
             <span className="mode-name">遊び方</span>

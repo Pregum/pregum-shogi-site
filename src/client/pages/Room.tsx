@@ -3,6 +3,7 @@ import type { Color, Move } from '../../shared/shogi';
 import { GOTE, SENTE, isInCheck, replay } from '../../shared/shogi';
 import { movesToJp } from '../../shared/kif';
 import { Board } from '../components/Board';
+import { useFormationBanner } from '../components/FormationBanner';
 import { FoxMark } from '../components/FoxMark';
 import { Link } from '../lib/router';
 import { playCheck, playEnd, playMove } from '../lib/sound';
@@ -82,6 +83,12 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
 
   const pos = useMemo(() => (game ? replay(game.moves) : null), [game]);
   const jpMoves = useMemo(() => (game ? movesToJp(game.moves) : []), [game]);
+
+  // 囲い完成エフェクト(再戦のたびにリセット)
+  const formationBanner = useFormationBanner(pos, `${roomId}-${game?.gameNo ?? 0}`, [
+    game?.players[SENTE]?.name ?? '先手',
+    game?.players[GOTE]?.name ?? '後手',
+  ]);
 
   // 時計: スナップショット受信時刻を覚えて残り時間を進める
   const clockInfo = useMemo(
@@ -360,6 +367,8 @@ function RoomInner({ roomId, name }: { roomId: string; name: string }) {
           {game.pending.kind === 'matta' ? '待った' : 'もう一局'}を申請中 — 相手の返事を待っています…
         </div>
       )}
+
+      {formationBanner}
     </div>
   );
 }

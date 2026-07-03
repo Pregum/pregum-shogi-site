@@ -1,0 +1,66 @@
+// 囲い(陣形)の検出
+// パターンは先手視点の絶対座標で定義し、後手は盤を点対称に反転して照合する。
+import type { Color, PieceType, Position } from './shogi';
+import { GOTE, SENTE, idx } from './shogi';
+
+export interface Formation {
+  id: string;
+  name: string;
+  // [file, rank, 駒種] がすべて自分の駒で揃ったら完成(歩は問わない)
+  pieces: [number, number, PieceType][];
+}
+
+export const FORMATIONS: Formation[] = [
+  {
+    id: 'yagura',
+    name: '矢倉囲い',
+    pieces: [
+      [8, 8, 'OU'],
+      [7, 8, 'KI'],
+      [7, 7, 'GI'],
+      [6, 7, 'KI'],
+    ],
+  },
+  {
+    id: 'mino',
+    name: '美濃囲い',
+    pieces: [
+      [2, 8, 'OU'],
+      [3, 8, 'GI'],
+      [5, 8, 'KI'],
+      [4, 9, 'KI'],
+    ],
+  },
+  {
+    id: 'anaguma',
+    name: '穴熊囲い',
+    pieces: [
+      [9, 9, 'OU'],
+      [9, 8, 'KY'],
+      [8, 8, 'GI'],
+      [7, 9, 'KI'],
+    ],
+  },
+];
+
+export interface DetectedFormation {
+  id: string;
+  name: string;
+  color: Color;
+}
+
+export function detectFormations(pos: Position): DetectedFormation[] {
+  const out: DetectedFormation[] = [];
+  for (const color of [SENTE, GOTE] as Color[]) {
+    for (const f of FORMATIONS) {
+      const ok = f.pieces.every(([file, rank, type]) => {
+        const tf = color === SENTE ? file : 10 - file;
+        const tr = color === SENTE ? rank : 10 - rank;
+        const p = pos.board[idx(tf, tr)];
+        return !!p && p.color === color && p.type === type;
+      });
+      if (ok) out.push({ id: f.id, name: f.name, color });
+    }
+  }
+  return out;
+}
