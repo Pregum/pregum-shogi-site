@@ -51,7 +51,7 @@ describe('レッスンデータの整合性', () => {
   });
 
   it('囲いレッスンの最終形は検出パターンと一致する', () => {
-    for (const id of ['yagura', 'mino', 'anaguma', 'ginkanmuri', 'takamino']) {
+    for (const id of ['yagura', 'mino', 'anaguma', 'ginkanmuri', 'takamino', 'tenshukaku', 'diamond-mino']) {
       const lesson = LESSONS.find((l) => l.id === id)!;
       const last = lesson.steps[lesson.steps.length - 1].pos;
       const found = detectFormations(last);
@@ -59,8 +59,22 @@ describe('レッスンデータの整合性', () => {
     }
   });
 
+  it('必至レッスン: 後手のどんな受け・逃げにも1手詰みが存在する', () => {
+    const lesson = LESSONS.find((l) => l.id === 'hisshi')!;
+    const pos = lesson.steps[1].pos; // ▲1三金を打った直後(後手番)
+    const defenses = legalMoves(pos);
+    expect(defenses.length).toBeGreaterThan(0);
+    for (const d of defenses) {
+      const afterDefense = applyMove(pos, d);
+      const mateExists = legalMoves(afterDefense).some(
+        (m) => outcome(applyMove(afterDefense, m)).over,
+      );
+      expect(mateExists, `受け ${JSON.stringify(d)} に対する詰みがない`).toBe(true);
+    }
+  });
+
   it('「詰み」と解説しているレッスンの最終局面は本当に詰み', () => {
-    for (const id of ['atama-kin', 'haragin', 'chudan-gyoku', 'mino-kuzushi']) {
+    for (const id of ['atama-kin', 'haragin', 'chudan-gyoku', 'mino-kuzushi', 'hisshi']) {
       const lesson = LESSONS.find((l) => l.id === id)!;
       const last = lesson.steps[lesson.steps.length - 1].pos;
       const oc = outcome(last);

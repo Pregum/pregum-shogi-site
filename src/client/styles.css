@@ -1450,22 +1450,70 @@ input::placeholder {
   max-width: 960px;
 }
 
-.study-section {
-  margin-bottom: 34px;
+.study-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  padding: 10px 0;
+  background: linear-gradient(180deg, var(--bg0) 75%, transparent);
 }
 
-.study-heading {
-  font-family: var(--font-display);
-  font-size: 20px;
-  letter-spacing: 0.12em;
-  color: var(--gold);
-  margin: 0 0 4px;
+.study-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel);
+  color: var(--cream-dim);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.study-tab:hover {
+  border-color: var(--gold-dim);
+  color: var(--cream);
+}
+
+.study-tab.is-active {
+  background: linear-gradient(160deg, var(--vermilion-bright), var(--vermilion) 60%, var(--vermilion-deep));
+  border-color: transparent;
+  color: #fff5ea;
+  box-shadow: 0 4px 16px rgba(224, 80, 42, 0.35);
+}
+
+.study-tab-icon {
+  font-size: 14px;
+}
+
+.study-tab-count {
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-family: ui-monospace, monospace;
+}
+
+.study-tab:not(.is-active) .study-tab-count {
+  background: rgba(227, 169, 79, 0.12);
+  color: var(--gold-dim);
 }
 
 .study-desc {
   font-size: 13px;
   color: var(--muted);
   margin: 0 0 16px;
+}
+
+.lesson-grid {
+  animation: fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .lesson-grid {
