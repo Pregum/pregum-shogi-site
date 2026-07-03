@@ -126,7 +126,7 @@ export function Home() {
           </Link>
           <Link to="/study" className="mode-card">
             <span className="mode-icon">📚</span>
-            <span className="mode-name">手筋を学ぶ</span>
+            <span className="mode-name">手筋・戦法を学ぶ</span>
             <span className="mode-desc">動く盤面で覚える</span>
           </Link>
           <Link to="/rules" className="mode-card">

@@ -9,6 +9,16 @@ const CATEGORIES = [
     desc: '駒の特性を活かした「うまい手」の型。覚えるだけで実戦の勝率が上がります。',
   },
   {
+    key: '居飛車' as const,
+    heading: '🏹 居飛車の戦法',
+    desc: '飛車を最初の位置(2筋)のまま使う王道スタイル。まっすぐ攻める分かりやすさが魅力。',
+  },
+  {
+    key: '振り飛車' as const,
+    heading: '🌀 振り飛車の戦法',
+    desc: '飛車を左へ「振って」戦うスタイル。美濃囲いとの相性が抜群で、堅く構えてカウンターを狙います。',
+  },
+  {
     key: '囲い' as const,
     heading: '🏯 囲い',
     desc: '玉を守る陣形。対局中に完成させると完成エフェクトが出ます。',
@@ -18,7 +28,7 @@ const CATEGORIES = [
 export function Study() {
   return (
     <div className="kifu-page study-page">
-      <h1 className="page-title">📚 手筋と囲いを学ぶ</h1>
+      <h1 className="page-title">📚 手筋・戦法・囲いを学ぶ</h1>
       <p className="page-sub">盤面のアニメーションで覚える、将棋の頻出ワザ集</p>
 
       {CATEGORIES.map((cat) => (

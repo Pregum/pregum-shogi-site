@@ -10,10 +10,12 @@ export interface LessonStep {
   lastTo?: Sq;
 }
 
+export type LessonCategory = '手筋' | '囲い' | '居飛車' | '振り飛車';
+
 export interface Lesson {
   id: string;
   title: string;
-  category: '手筋' | '囲い';
+  category: LessonCategory;
   summary: string;
   steps: LessonStep[];
 }
@@ -201,6 +203,112 @@ const atamakin: Lesson = {
   })(),
 };
 
+// ---------- 戦法(居飛車) ----------
+// 戦法レッスンは初期局面から実際の合法手で進める(テストで全手の合法性を検証)
+
+const bogin: Lesson = {
+  id: 'bogin',
+  title: '原始棒銀',
+  category: '居飛車',
+  summary:
+    '飛車の前に銀をまっすぐ繰り出し、歩と銀の力で2筋を突き破る攻めの基本戦法。初心者が最初に覚える攻め方の王道。',
+  steps: seq(initialPosition(), '初期局面から。棒銀の目標は「2三の地点」をこじ開けることです。', [
+    { move: mv(2, 7, 2, 6), caption: '▲2六歩。まず飛車先の歩を伸ばします。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。後手は角道を開けます。' },
+    { move: mv(2, 6, 2, 5), caption: '▲2五歩。さらに伸ばして2四への圧力をかけます。' },
+    { move: mv(2, 2, 3, 3), caption: '△3三角。▲2四歩の交換を角が受け止めます。' },
+    { move: mv(3, 9, 3, 8), caption: '▲3八銀。ここから銀の行進が始まります。' },
+    { move: mv(3, 1, 4, 2), caption: '△4二銀。後手も駒組み。' },
+    { move: mv(3, 8, 2, 7), caption: '▲2七銀。銀が飛車の前へ。「棒」のようにまっすぐ進むのが名前の由来。' },
+    { move: mv(5, 3, 5, 4), caption: '△5四歩。' },
+    { move: mv(2, 7, 2, 6), caption: '▲2六銀。歩の後ろにぴったり付きます。' },
+    { move: mv(9, 3, 9, 4), caption: '△9四歩。' },
+    { move: mv(2, 6, 1, 5), caption: '▲1五銀！ 端に出るのが棒銀の決め手。次の▲2四歩が受けにくい。' },
+    { move: mv(9, 4, 9, 5), caption: '△9五歩。後手は有効な受けがありません。' },
+    { move: mv(2, 5, 2, 4), caption: '▲2四歩！ いよいよ突破開始。' },
+    { move: mv(2, 3, 2, 4), caption: '△同歩。' },
+    { move: mv(1, 5, 2, 4), caption: '▲同銀。歩と銀の二段構えで2三の守りを剥がします。' },
+    { move: mv(3, 3, 2, 4), caption: '△同角と銀を取りますが…' },
+    {
+      move: mv(2, 8, 2, 4),
+      caption: '▲同飛！ 銀を渡しても角と歩を手に入れ、飛車が敵陣目前へ。棒銀、大成功です。',
+    },
+  ]),
+};
+
+// ---------- 戦法(振り飛車) ----------
+
+const shiken: Lesson = {
+  id: 'shiken-bisha',
+  title: '四間飛車',
+  category: '振り飛車',
+  summary:
+    '飛車を左から4筋目(6筋)に振る、振り飛車の代表格。美濃囲いとセットで「受けてから反撃」のカウンター将棋。',
+  steps: seq(initialPosition(), '振り飛車の中で最も人気のある四間飛車。手順を見てみましょう。', [
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。角道を開けます。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(6, 7, 6, 6), caption: '▲6六歩。角道を止めて角交換を拒否。これが振り飛車の合図です。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。後手は飛車先を伸ばしてきます。' },
+    { move: mv(2, 8, 6, 8), caption: '▲6八飛！ 左から4筋目(6筋)に飛車を振る＝「四間飛車」。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。攻めの姿勢を見せてきますが…' },
+    { move: mv(8, 8, 7, 7), caption: '▲7七角。△8六歩の交換は角ががっちり受け止めます。' },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    {
+      move: mv(5, 9, 4, 8),
+      caption:
+        '▲4八玉。玉は飛車と反対の右側へ。ここから美濃囲い(囲いレッスン参照)に組めば、堅陣からのカウンターが炸裂します。',
+    },
+  ]),
+};
+
+const sanken: Lesson = {
+  id: 'sanken-bisha',
+  title: '三間飛車',
+  category: '振り飛車',
+  summary:
+    '飛車を左から3筋目(7筋)に振る戦法。軽快なさばきが持ち味で、攻撃的な「石田流」への発展が魅力。',
+  steps: seq(initialPosition(), '四間飛車の隣、7筋に振るのが三間飛車です。', [
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。角道を開けます。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(6, 7, 6, 6), caption: '▲6六歩。角道を止めます。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    {
+      move: mv(2, 8, 7, 8),
+      caption: '▲7八飛！ 左から3筋目(7筋)へ＝「三間飛車」。四間飛車より1筋攻撃的な位置です。',
+    },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(8, 8, 7, 7), caption: '▲7七角。8筋は角で受けます。' },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    {
+      move: mv(5, 9, 4, 8),
+      caption:
+        '▲4八玉。あとは美濃囲いへ。将来▲7五歩〜▲7六飛と浮けば、攻撃型の「石田流」に発展します。',
+    },
+  ]),
+};
+
+const nakabisha: Lesson = {
+  id: 'nakabisha',
+  title: '先手中飛車',
+  category: '振り飛車',
+  summary: '飛車をど真ん中(5筋)に振り、中央から豪快に攻める戦法。「攻める振り飛車」の代表格。',
+  steps: seq(initialPosition(), '盤の中央を制圧する中飛車。パワフルな将棋が好きな人におすすめです。', [
+    { move: mv(5, 7, 5, 6), caption: '▲5六歩。いきなり中央の歩を突くのが中飛車の第一歩。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(2, 8, 5, 8), caption: '▲5八飛！ ど真ん中に飛車を振る＝「中飛車」。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。角道も開けておきます。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(8, 8, 7, 7), caption: '▲7七角。8筋を受けつつ…' },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    {
+      move: mv(5, 6, 5, 5),
+      caption:
+        '▲5五歩！ 5筋の「位(くらい)」を取って中央を制圧。ここから▲4八玉〜美濃囲いに組み、▲5四歩の突破を狙います。',
+    },
+  ]),
+};
+
 // ---------- 囲い ----------
 
 const yagura: Lesson = {
@@ -276,4 +384,16 @@ const anaguma: Lesson = {
   })(),
 };
 
-export const LESSONS: Lesson[] = [fundoshi, wariuchi, dengaku, atamakin, yagura, mino, anaguma];
+export const LESSONS: Lesson[] = [
+  fundoshi,
+  wariuchi,
+  dengaku,
+  atamakin,
+  bogin,
+  shiken,
+  sanken,
+  nakabisha,
+  yagura,
+  mino,
+  anaguma,
+];

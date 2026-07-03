@@ -59,8 +59,8 @@ describe('レッスンデータの整合性', () => {
     }
   });
 
-  it('手筋レッスンの指し手はすべて合法手', () => {
-    for (const lesson of LESSONS.filter((l) => l.category === '手筋')) {
+  it('手筋・戦法レッスンの指し手はすべて合法手', () => {
+    for (const lesson of LESSONS.filter((l) => l.category !== '囲い')) {
       for (let i = 1; i < lesson.steps.length; i++) {
         const prev = lesson.steps[i - 1].pos;
         const cur = lesson.steps[i].pos;
