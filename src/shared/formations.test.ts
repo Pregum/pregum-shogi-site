@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { GOTE, SENTE, applyMove, idx, initialPosition, legalMoves, outcome } from './shogi';
+import {
+  GOTE,
+  SENTE,
+  applyMove,
+  idx,
+  initialPosition,
+  isAttacked,
+  legalMoves,
+  outcome,
+} from './shogi';
 import { detectFormations } from './formations';
 import { LESSONS } from '../client/lib/lessons';
 
@@ -59,17 +68,37 @@ describe('レッスンデータの整合性', () => {
     }
   });
 
-  it('必至レッスン: 後手のどんな受け・逃げにも1手詰みが存在する', () => {
-    const lesson = LESSONS.find((l) => l.id === 'hisshi')!;
-    const pos = lesson.steps[1].pos; // ▲1三金を打った直後(後手番)
-    const defenses = legalMoves(pos);
-    expect(defenses.length).toBeGreaterThan(0);
-    for (const d of defenses) {
-      const afterDefense = applyMove(pos, d);
-      const mateExists = legalMoves(afterDefense).some(
-        (m) => outcome(applyMove(afterDefense, m)).over,
-      );
-      expect(mateExists, `受け ${JSON.stringify(d)} に対する詰みがない`).toBe(true);
+  it('必至・腹銀レッスン: 後手のどんな受け・逃げにも1手詰みが存在する', () => {
+    // どちらも「決め手を放った直後(後手番)」の局面が対象
+    for (const id of ['hisshi', 'haragin']) {
+      const lesson = LESSONS.find((l) => l.id === id)!;
+      const pos = lesson.steps[1].pos;
+      const defenses = legalMoves(pos);
+      expect(defenses.length).toBeGreaterThan(0);
+      for (const d of defenses) {
+        const afterDefense = applyMove(pos, d);
+        const mateExists = legalMoves(afterDefense).some(
+          (m) => outcome(applyMove(afterDefense, m)).over,
+        );
+        expect(mateExists, `${id}: 受け ${JSON.stringify(d)} に対する詰みがない`).toBe(true);
+      }
+    }
+  });
+
+  it('両取りレッスン: 打ち込んだ駒・出た駒が相手に取られない', () => {
+    // 割り打ちの銀(▲4一銀)・十字飛車(▲5五飛)・ふんどしの桂(▲4三桂)
+    const checks: [string, number, number][] = [
+      ['wariuchi-gin', 4, 1],
+      ['juji-bisha', 5, 5],
+      ['fundoshi-kei', 4, 3],
+    ];
+    for (const [id, file, rank] of checks) {
+      const lesson = LESSONS.find((l) => l.id === id)!;
+      const pos = lesson.steps[1].pos;
+      expect(
+        isAttacked(pos, { file, rank }, GOTE),
+        `${id}: ${file}${rank} の駒が後手に取られてしまう`,
+      ).toBe(false);
     }
   });
 
