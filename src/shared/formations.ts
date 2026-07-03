@@ -41,6 +41,16 @@ export const FORMATIONS: Formation[] = [
       [7, 9, 'KI'],
     ],
   },
+  {
+    id: 'ginkanmuri',
+    name: '銀冠',
+    pieces: [
+      [2, 8, 'OU'],
+      [2, 7, 'GI'],
+      [3, 8, 'KI'],
+      [5, 8, 'KI'],
+    ],
+  },
 ];
 
 export interface DetectedFormation {

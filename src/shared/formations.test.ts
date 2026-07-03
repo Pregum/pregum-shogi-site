@@ -51,7 +51,7 @@ describe('レッスンデータの整合性', () => {
   });
 
   it('囲いレッスンの最終形は検出パターンと一致する', () => {
-    for (const id of ['yagura', 'mino', 'anaguma']) {
+    for (const id of ['yagura', 'mino', 'anaguma', 'ginkanmuri']) {
       const lesson = LESSONS.find((l) => l.id === id)!;
       const last = lesson.steps[lesson.steps.length - 1].pos;
       const found = detectFormations(last);
