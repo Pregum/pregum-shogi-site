@@ -236,6 +236,87 @@ const bogin: Lesson = {
   ]),
 };
 
+const hayakuri: Lesson = {
+  id: 'hayakuri-gin',
+  title: '早繰り銀',
+  category: '居飛車',
+  summary:
+    '銀を4七→5六→4五と最短ルートで前線に送り込むスピード戦法。棒銀より柔軟で、プロでも大流行。',
+  steps: seq(initialPosition(), '「早く銀を繰り出す」から早繰り銀。銀の走るルートに注目です。', [
+    { move: mv(2, 7, 2, 6), caption: '▲2六歩。飛車先を突いて…' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(2, 6, 2, 5), caption: '▲2五歩。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(6, 9, 7, 8), caption: '▲7八金。8筋をしっかり受けます。' },
+    { move: mv(4, 1, 3, 2), caption: '△3二金。' },
+    { move: mv(3, 9, 3, 8), caption: '▲3八銀。ここから銀が走ります。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(3, 7, 3, 6), caption: '▲3六歩。銀の通り道を先に作っておくのがポイント。' },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    { move: mv(3, 8, 3, 7), caption: '▲3七銀。棒銀(2七ルート)と違い、こちらは3七から中央寄りへ。' },
+    { move: mv(5, 1, 4, 2), caption: '△4二玉。' },
+    { move: mv(3, 7, 4, 6), caption: '▲4六銀。銀が最前線に到着。ここから仕掛けます。' },
+    { move: mv(6, 1, 5, 2), caption: '△5二金。' },
+    { move: mv(3, 6, 3, 5), caption: '▲3五歩！ 銀の力を借りて3筋から仕掛けます。' },
+    { move: mv(3, 4, 3, 5), caption: '△同歩。' },
+    {
+      move: mv(4, 6, 3, 5),
+      caption:
+        '▲同銀。歩をかすめ取りながら銀が進出。次は▲2四歩△同歩▲同飛の突破と▲3四歩の押し込み、2つの狙いが同時に残り、受けるのは大変です。',
+    },
+  ]),
+};
+
+const kakugawari: Lesson = {
+  id: 'kakugawari',
+  title: '角換わり',
+  category: '居飛車',
+  summary:
+    '序盤早々にお互いの角を交換する本格派の戦法。持ち駒の角の「打ち込み」をめぐる高度な駒組みが魅力。',
+  steps: seq(initialPosition(), '角交換までの手順と、そのあとの世界を覗いてみましょう。', [
+    { move: mv(2, 7, 2, 6), caption: '▲2六歩。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。角道を開けます。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(8, 8, 7, 7), caption: '▲7七角。まず8筋を受けて…' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。後手も角道を開けると、角同士がにらみ合います。' },
+    { move: mv(7, 9, 8, 8), caption: '▲8八銀。角交換に備えて銀を上がっておきます。' },
+    { move: mv(2, 2, 7, 7, true), caption: '△7七角成。後手から角交換を仕掛けてきました。' },
+    { move: mv(8, 8, 7, 7), caption: '▲同銀。これで「角換わり」の出来上がり。お互い角を持ち駒にしています。' },
+    { move: mv(3, 1, 3, 2), caption: '△3二銀。' },
+    {
+      move: mv(6, 9, 7, 8),
+      caption:
+        '▲7八金。ここからはお互い、角を打ち込まれるスキ(空いたマス)を作らないよう慎重に駒組み。腰掛け銀や早繰り銀と組み合わせて戦います。',
+    },
+  ]),
+};
+
+const aigakari: Lesson = {
+  id: 'aigakari',
+  title: '相掛かり・飛車先の歩交換',
+  category: '居飛車',
+  summary:
+    'お互い飛車先の歩を突き合う力戦調の戦法。基本技「飛車先の歩交換」で持ち歩を手に入れる手順を学ぶ。',
+  steps: seq(initialPosition(), '相掛かりの基本、「飛車先の歩交換」。タダで歩が手に入る…？', [
+    { move: mv(2, 7, 2, 6), caption: '▲2六歩。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。お互い飛車先を突き合うのが「相掛かり」。' },
+    { move: mv(2, 6, 2, 5), caption: '▲2五歩。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(6, 9, 7, 8), caption: '▲7八金。歩交換の前に8筋を受けておくのが大事な準備。' },
+    { move: mv(4, 1, 3, 2), caption: '△3二金。後手も同じく受けます。' },
+    { move: mv(2, 5, 2, 4), caption: '▲2四歩！ いよいよ歩交換へ。' },
+    { move: mv(2, 3, 2, 4), caption: '△同歩。' },
+    { move: mv(2, 8, 2, 4), caption: '▲同飛。飛車が敵陣の目前まで進出しました。' },
+    { move: { to: sq(2, 3), drop: 'FU' }, caption: '△2三歩打。後手は取った歩を打って蓋をします。' },
+    {
+      move: mv(2, 4, 2, 8),
+      caption:
+        '▲2八飛。飛車は定位置へ帰還。成果は「持ち歩1枚」— この歩が後々、継ぎ歩や垂れ歩などの攻めの資源になります。',
+    },
+  ]),
+};
+
 // ---------- 戦法(振り飛車) ----------
 
 const shiken: Lesson = {
@@ -305,6 +386,55 @@ const nakabisha: Lesson = {
       move: mv(5, 6, 5, 5),
       caption:
         '▲5五歩！ 5筋の「位(くらい)」を取って中央を制圧。ここから▲4八玉〜美濃囲いに組み、▲5四歩の突破を狙います。',
+    },
+  ]),
+};
+
+const mukai: Lesson = {
+  id: 'mukai-bisha',
+  title: '向かい飛車',
+  category: '振り飛車',
+  summary:
+    '相手の飛車の正面(8筋)に飛車を振る戦法。相手の攻めをそのまま反撃のエネルギーに変える、カウンターの極み。',
+  steps: seq(initialPosition(), '相手の飛車と「向かい合う」から向かい飛車。8筋での逆襲を狙います。', [
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(6, 7, 6, 6), caption: '▲6六歩。角道を止めて振り飛車宣言。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(8, 8, 7, 7), caption: '▲7七角。先に角で8筋を受けておきます。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。後手は勢いよく飛車先を伸ばしてきますが…' },
+    {
+      move: mv(2, 8, 8, 8),
+      caption: '▲8八飛！ 相手の飛車の真正面へ。これが「向かい飛車」です。',
+    },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    {
+      move: mv(5, 9, 4, 8),
+      caption:
+        '▲4八玉。美濃囲いに組んだあと、機を見て▲8六歩から8筋を逆襲するのが向かい飛車の醍醐味。相手の攻め筋がそのまま自分の攻め筋になります。',
+    },
+  ]),
+};
+
+const ishida: Lesson = {
+  id: 'ishida',
+  title: '石田流（三間飛車の発展形）',
+  category: '振り飛車',
+  summary:
+    '三間飛車から▲7五歩と伸ばし、飛車を7六に「浮かせる」攻撃的布陣。振り飛車ながら自分から攻められるのが魅力。',
+  steps: seq(initialPosition(), '三間飛車の進化形、石田流。飛車が歩の上に浮く独特の構えを作ります。', [
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(7, 6, 7, 5), caption: '▲7五歩！ 2手目からさらに伸ばすこの歩が「石田流」の合図。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(2, 8, 7, 8), caption: '▲7八飛。三間飛車に振って…' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(5, 9, 4, 8), caption: '▲4八玉。玉を右へ。美濃囲いの準備です。' },
+    { move: mv(7, 1, 6, 2), caption: '△6二銀。' },
+    {
+      move: mv(7, 8, 7, 6),
+      caption:
+        '▲7六飛！ 飛車が歩の上に浮く「石田流本組み」の骨格が完成。飛車が横に自由に動けるうえ、▲7四歩の仕掛けをいつでも狙える攻撃的な構えです。',
     },
   ]),
 };
@@ -390,9 +520,14 @@ export const LESSONS: Lesson[] = [
   dengaku,
   atamakin,
   bogin,
+  hayakuri,
+  kakugawari,
+  aigakari,
   shiken,
   sanken,
   nakabisha,
+  mukai,
+  ishida,
   yagura,
   mino,
   anaguma,
