@@ -42,13 +42,23 @@ export const FORMATIONS: Formation[] = [
     ],
   },
   {
+    id: 'takamino',
+    name: '高美濃囲い',
+    pieces: [
+      [2, 8, 'OU'],
+      [3, 8, 'GI'],
+      [4, 9, 'KI'],
+      [4, 7, 'KI'],
+    ],
+  },
+  {
+    // 金の配置は5八型・4七型の両方があるため、共通の3枚で判定する
     id: 'ginkanmuri',
     name: '銀冠',
     pieces: [
       [2, 8, 'OU'],
       [2, 7, 'GI'],
       [3, 8, 'KI'],
-      [5, 8, 'KI'],
     ],
   },
 ];

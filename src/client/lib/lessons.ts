@@ -320,6 +320,135 @@ const jujiBisha: Lesson = {
   ),
 };
 
+const hashizeme: Lesson = {
+  id: 'hashizeme',
+  title: '端攻め',
+  category: '手筋',
+  summary:
+    '守り駒の少ない端(1筋・9筋)を歩・香・桂の「数の攻め」で破る手筋。地味に見えて、終盤の勝敗を分ける急所。',
+  steps: seq(
+    bare(
+      [
+        [2, 2, 'OU', GOTE],
+        [3, 2, 'KI', GOTE],
+        [1, 1, 'KY', GOTE],
+        [2, 1, 'KE', GOTE],
+        [1, 4, 'FU', GOTE],
+        [2, 3, 'FU', GOTE],
+        [1, 9, 'KY', SENTE],
+        [1, 6, 'FU', SENTE],
+        [3, 7, 'KE', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      { FU: 1 },
+    ),
+    'お互い端歩を突き合った形。1筋に香・歩、そして3七に桂。攻めの準備は完了です。',
+    [
+      { move: mv(1, 6, 1, 5), caption: '▲1五歩！ 端の歩をぶつけて開戦します。' },
+      { move: mv(1, 4, 1, 5), caption: '△同歩。' },
+      {
+        move: { to: sq(1, 3), drop: 'FU' },
+        caption: 'すぐ取り返さず▲1三歩打！ 香の頭に歩を垂らすのが端攻めの手筋です。',
+      },
+      { move: mv(1, 1, 1, 3), caption: '△同香。香が前に釣り出されました。そこで——' },
+      {
+        move: mv(3, 7, 2, 5),
+        caption:
+          '▲2五桂！ 桂が香に飛びかかります。△1四香と逃げれば▲1五香(歩を取りつつ追撃)でどのみち捕獲。歩→香→桂と数を足していく「数の攻め」が端攻めの極意です。',
+      },
+    ],
+  ),
+};
+
+const keiTakatobi: Lesson = {
+  id: 'kei-takatobi',
+  title: '桂の高跳び歩の餌食（格言）',
+  category: '手筋',
+  summary:
+    '桂馬は将棋で唯一「後ろに戻れない」駒。支援なしで跳ねた桂が歩1枚に捕まる様子から、跳ぶタイミングの大切さを学ぶ。',
+  steps: (() => {
+    const start = bare(
+      [
+        [5, 1, 'OU', GOTE],
+        [1, 1, 'KY', GOTE],
+        [2, 1, 'KE', GOTE],
+        [1, 3, 'FU', GOTE],
+        [2, 3, 'FU', GOTE],
+        [3, 3, 'FU', GOTE],
+        [3, 7, 'KE', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      {},
+    );
+    const steps = seq(start, '先手の桂が3七で出番を待っています。しかし、支援なしで跳ぶと…？', [
+      {
+        move: mv(3, 7, 2, 5),
+        caption: '▲2五桂!? 威勢よく跳ねましたが、この桂を支える味方がいません。',
+      },
+      {
+        move: mv(2, 3, 2, 4),
+        caption:
+          '△2四歩！ 歩がそっと伸びてきました。次に△2五歩と取られてしまうのに、桂の行き先は1三と3三だけ…',
+      },
+      {
+        move: mv(2, 5, 3, 3, true),
+        caption: '仕方なく▲3三桂成と突っ込みますが(▲1三桂成にも△同香)…',
+      },
+      { move: mv(2, 1, 3, 3), caption: '△同桂。あっさり捕獲されてしまいました。' },
+    ]);
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '格言「桂の高跳び歩の餌食」。桂は戻れない駒だからこそ、跳ぶのは歩や銀の支援が整ってから。端攻めレッスンの▲2五桂(香を狙う明確な目標つき)と見比べてみてください。',
+    });
+    return steps;
+  })(),
+};
+
+const kinzoko: Lesson = {
+  id: 'kinzoko-fu',
+  title: '金底の歩（きんぞこのふ）',
+  category: '手筋',
+  summary:
+    '「金底の歩、岩より堅し」。一段目に侵入した飛車・龍の横利きを、金の底に打つ歩1枚でシャットアウトする防御の手筋。',
+  steps: (() => {
+    const start = bare(
+      [
+        [5, 1, 'OU', GOTE],
+        [1, 3, 'FU', GOTE],
+        [9, 3, 'FU', GOTE],
+        [8, 9, 'RY', GOTE],
+        [2, 8, 'OU', SENTE],
+        [3, 8, 'GI', SENTE],
+        [4, 9, 'KI', SENTE],
+        [5, 8, 'KI', SENTE],
+        [1, 7, 'FU', SENTE],
+        [2, 6, 'FU', SENTE],
+        [3, 7, 'FU', SENTE],
+        [4, 7, 'FU', SENTE],
+      ],
+      { FU: 1 },
+    );
+    const steps = seq(
+      start,
+      '大変！ 後手の龍が一段目(8九)に侵入し、横利きが美濃囲いの金(4九)を直撃しています。',
+      [
+        {
+          move: { to: sq(5, 9), drop: 'FU' },
+          caption:
+            '▲5九歩打！ 金の底に歩を打つ「金底の歩」。龍の横利きがピタリと止まりました。この歩は5八の金が守っていて、△同龍なら▲同金で龍がタダです。',
+        },
+      ],
+    );
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '「金底の歩、岩より堅し」——龍はもう何もできません。放置していれば△4九龍から美濃囲いが崩壊するところでした。攻めだけでなく、受けにも歩は大活躍します。',
+    });
+    return steps;
+  })(),
+};
+
 // ---------- 戦法(居飛車) ----------
 // 戦法レッスンは初期局面から実際の合法手で進める(テストで全手の合法性を検証)
 
@@ -488,6 +617,38 @@ const migiShiken: Lesson = {
   ]),
 };
 
+const yokofudori: Lesson = {
+  id: 'yokofudori',
+  title: '横歩取り',
+  category: '居飛車',
+  summary:
+    'お互い飛車先の歩を交換したあと、3四の「横歩」を飛車でかすめ取る超急戦。プロで大流行した、スリル満点の戦型。',
+  steps: seq(initialPosition(), '1歩得を巡って、序盤からいきなり火花が散る「横歩取り」の世界へ。', [
+    { move: mv(2, 7, 2, 6), caption: '▲2六歩。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。お互い角道を開けます。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(2, 6, 2, 5), caption: '▲2五歩。' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    {
+      move: mv(6, 9, 7, 8),
+      caption: '▲7八金。この金が8八の角を守る大事な一手。後の展開の伏線です。',
+    },
+    { move: mv(4, 1, 3, 2), caption: '△3二金。後手も同様に備えます。' },
+    { move: mv(2, 5, 2, 4), caption: '▲2四歩。飛車先の歩交換へ。' },
+    { move: mv(2, 3, 2, 4), caption: '△同歩。' },
+    { move: mv(2, 8, 2, 4), caption: '▲同飛。' },
+    { move: mv(8, 5, 8, 6), caption: '△8六歩。後手も同じように歩交換してきます。' },
+    { move: mv(8, 7, 8, 6), caption: '▲同歩。' },
+    { move: mv(8, 2, 8, 6), caption: '△同飛。お互いの飛車が中空に浮かび合ったこの瞬間——' },
+    {
+      move: mv(2, 4, 3, 4),
+      caption:
+        '▲3四飛！ 3四の歩を横取りするから「横歩取り」。先手は1歩得ですが、後手は攻めの主導権を握れる——ここから将棋界屈指の激しい戦いが始まります。なお8八の角は▲7八金がしっかり守っています。',
+    },
+  ]),
+};
+
 // ---------- 戦法(振り飛車) ----------
 
 const shiken: Lesson = {
@@ -606,6 +767,29 @@ const ishida: Lesson = {
       move: mv(7, 8, 7, 6),
       caption:
         '▲7六飛！ 飛車が歩の上に浮く「石田流本組み」の骨格が完成。飛車が横に自由に動けるうえ、▲7四歩の仕掛けをいつでも狙える攻撃的な構えです。',
+    },
+  ]),
+};
+
+const hayaIshida: Lesson = {
+  id: 'haya-ishida',
+  title: '早石田の速攻',
+  category: '振り飛車',
+  summary:
+    'わずか9手で飛車が敵陣に迫る、三間飛車の超急戦バージョン。じっくり組む「石田流本組み」と対になる速攻ルート。',
+  steps: seq(initialPosition(), '石田流(本組み)レッスンのスピード重視版。出だし数手で勝負を仕掛けます。', [
+    { move: mv(7, 7, 7, 6), caption: '▲7六歩。' },
+    { move: mv(3, 3, 3, 4), caption: '△3四歩。' },
+    { move: mv(7, 6, 7, 5), caption: '▲7五歩。石田流の合図。' },
+    { move: mv(8, 3, 8, 4), caption: '△8四歩。' },
+    { move: mv(2, 8, 7, 8), caption: '▲7八飛。三間飛車に振って…' },
+    { move: mv(8, 4, 8, 5), caption: '△8五歩。' },
+    { move: mv(7, 5, 7, 4), caption: '▲7四歩！ もう仕掛けます。' },
+    { move: mv(7, 3, 7, 4), caption: '△同歩。' },
+    {
+      move: mv(7, 8, 7, 4),
+      caption:
+        '▲同飛。歩を交換しながら飛車が7四へ進出し、後手陣を上から押さえ込みました。序盤からいきなり主導権を握れるのが早石田の魅力です(※△4五角の反撃筋など危険もある上級者向けの急戦。まずは本組みから覚えるのがおすすめ)。',
     },
   ]),
 };
@@ -743,6 +927,52 @@ const ginkanmuri: Lesson = {
   })(),
 };
 
+const takamino: Lesson = {
+  id: 'takamino',
+  title: '高美濃（たかみの）',
+  category: '囲い',
+  summary:
+    '美濃囲いの金を一段上げた発展形。横に加えて斜め上からの攻めにも強くなり、桂の活用も見込める万能形。',
+  steps: (() => {
+    // 美濃囲いの完成形から始める
+    let start = initialPosition();
+    start = relocate(start, [2, 8], [6, 8]); // 飛
+    start = relocate(start, [5, 9], [2, 8]); // 玉
+    start = relocate(start, [3, 9], [3, 8]); // 銀
+    start = relocate(start, [6, 9], [5, 8]); // 金
+    return frames(start, '美濃囲いの完成形からスタート。金をぐっと持ち上げます。', [
+      [[4, 7], [4, 6], '▲4六歩。金の上がるスペースを作ります。'],
+      [
+        [5, 8],
+        [4, 7],
+        '▲4七金！ 金が一段上がって「高美濃」の完成。横一辺倒だった美濃が、斜め上からの攻めにも強くなりました。対局中に組むとエフェクトが出ます🦊',
+      ],
+      [
+        [3, 7],
+        [3, 6],
+        '▲3六歩。▲3七桂の活用も視野に入れた攻守バランスの良い形です。さらに▲2六歩〜▲2七銀と発展させれば銀冠(銀冠レッスン参照)。美濃→高美濃→銀冠は振り飛車の王道進化ルートです。',
+      ],
+    ]);
+  })(),
+};
+
+const kanigakoi: Lesson = {
+  id: 'kanigakoi',
+  title: 'カニ囲い',
+  category: '囲い',
+  summary:
+    '金2枚と玉が横に並ぶ、相居飛車の仮の宿。カニのように横歩きで完成し、ここから矢倉へ発展するのが王道。',
+  steps: frames(initialPosition(), '矢倉に組む途中の中継地点として、まずはカニ囲いで一安心。', [
+    [[6, 9], [7, 8], '▲7八金。'],
+    [[5, 9], [6, 9], '▲6九玉。玉が一つ横へ。'],
+    [
+      [4, 9],
+      [5, 8],
+      '▲5八金でカニ囲いの完成。金・玉・金が横に並ぶ姿がカニの目のよう。上からの攻めに意外と強く、急戦矢倉のお供にも。ここから▲6七金〜▲8八玉と組み替えれば金矢倉(矢倉レッスン参照)に発展します。',
+    ],
+  ]),
+};
+
 const funagakoi: Lesson = {
   id: 'funagakoi',
   title: '舟囲い',
@@ -772,22 +1002,29 @@ export const LESSONS: Lesson[] = [
   tarefu,
   tsugifu,
   jujiBisha,
+  hashizeme,
+  keiTakatobi,
+  kinzoko,
   atamakin,
   bogin,
   hayakuri,
   koshikake,
   kakugawari,
   aigakari,
+  yokofudori,
   migiShiken,
   shiken,
   sanken,
   nakabisha,
   mukai,
   ishida,
+  hayaIshida,
   kakukoukan,
   yagura,
   mino,
+  takamino,
   ginkanmuri,
   anaguma,
   funagakoi,
+  kanigakoi,
 ];
