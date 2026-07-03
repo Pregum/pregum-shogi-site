@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GOTE, SENTE, applyMove, idx, initialPosition, legalMoves } from './shogi';
+import { GOTE, SENTE, applyMove, idx, initialPosition, legalMoves, outcome } from './shogi';
 import { detectFormations } from './formations';
 import { LESSONS } from '../client/lib/lessons';
 
@@ -56,6 +56,17 @@ describe('レッスンデータの整合性', () => {
       const last = lesson.steps[lesson.steps.length - 1].pos;
       const found = detectFormations(last);
       expect(found.some((f) => f.id === id && f.color === SENTE)).toBe(true);
+    }
+  });
+
+  it('「詰み」と解説しているレッスンの最終局面は本当に詰み', () => {
+    for (const id of ['atama-kin', 'haragin', 'chudan-gyoku', 'mino-kuzushi']) {
+      const lesson = LESSONS.find((l) => l.id === id)!;
+      const last = lesson.steps[lesson.steps.length - 1].pos;
+      const oc = outcome(last);
+      expect(oc.over, `${id} の最終局面が詰んでいない`).toBe(true);
+      expect(oc.reason).toBe('checkmate');
+      expect(oc.winner).toBe(SENTE);
     }
   });
 

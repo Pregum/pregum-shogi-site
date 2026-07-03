@@ -23,6 +23,16 @@ const CATEGORIES = [
     heading: '🏯 囲い',
     desc: '玉を守る陣形。対局中に完成させると完成エフェクトが出ます。',
   },
+  {
+    key: '囲い崩し' as const,
+    heading: '💥 囲いの崩し方',
+    desc: 'どんなに堅い囲いにも必ず急所がある。美濃・矢倉の弱点を突く「攻めの設計図」。',
+  },
+  {
+    key: '詰みの形' as const,
+    heading: '👑 詰みの形',
+    desc: '終盤の目的地。基本の詰み形を知っていれば、ゴールから逆算して寄せられます。',
+  },
 ];
 
 export function Study() {

@@ -10,7 +10,7 @@ export interface LessonStep {
   lastTo?: Sq;
 }
 
-export type LessonCategory = '手筋' | '囲い' | '居飛車' | '振り飛車';
+export type LessonCategory = '手筋' | '囲い' | '居飛車' | '振り飛車' | '囲い崩し' | '詰みの形';
 
 export interface Lesson {
   id: string;
@@ -24,6 +24,7 @@ export interface Lesson {
 function bare(
   pieces: [number, number, PieceType, Color][],
   senteHand: Partial<Record<Base, number>> = {},
+  goteHand: Partial<Record<Base, number>> = {},
 ): Position {
   const board: Position['board'] = new Array(81).fill(null);
   for (const [file, rank, type, color] of pieces) {
@@ -31,6 +32,7 @@ function bare(
   }
   const hands: Position['hands'] = [emptyHand(), emptyHand()];
   Object.assign(hands[SENTE], senteHand);
+  Object.assign(hands[GOTE], goteHand);
   return { board, hands, turn: SENTE, ply: 0 };
 }
 
@@ -177,7 +179,7 @@ const dengaku: Lesson = {
 const atamakin: Lesson = {
   id: 'atama-kin',
   title: '頭金（あたまきん）',
-  category: '手筋',
+  category: '詰みの形',
   summary: 'すべての詰みの基本。「玉の頭に金」を支えつきで打てば、玉はどこにも逃げられない。',
   steps: (() => {
     const start = bare(
@@ -827,6 +829,190 @@ const kakukoukan: Lesson = {
   ]),
 };
 
+// ---------- 詰みの形 ----------
+
+const haragin: Lesson = {
+  id: 'haragin',
+  title: '腹銀（はらぎん）',
+  category: '詰みの形',
+  summary:
+    '玉の真横(腹)に銀を打つ、王手じゃないのに受けがない恐怖の一手。銀の斜めの利きが玉の逃げ道を全部消す。',
+  steps: (() => {
+    const start = bare(
+      [
+        [2, 1, 'OU', GOTE],
+        [1, 1, 'KY', GOTE],
+        [1, 3, 'FU', GOTE],
+        [2, 3, 'FU', GOTE],
+        [4, 2, 'RY', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      { GI: 1, KI: 1 },
+      { KI: 1 },
+    );
+    const steps = seq(start, '後手玉は2一。龍は近くにいますが王手はかかっていません。ここで決め手があります。', [
+      {
+        move: { to: sq(3, 1), drop: 'GI' },
+        caption:
+          '▲3一銀打！ 玉の腹(真横)に銀。王手ではありませんが、玉はどこへも動けません(1二・2二・3二は龍の利き、3一の銀は龍が守っていて取れない)。',
+      },
+      {
+        move: { to: sq(2, 2), drop: 'KI' },
+        caption: '後手は必死に△2二金と受けますが…',
+      },
+      {
+        move: mv(4, 2, 2, 2),
+        caption: '▲同龍！ 銀が龍を支えているので△同玉と取り返せません。',
+      },
+    ]);
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '詰み！ 1二は龍の横利き、3二も龍の横利き、1一は自分の香が邪魔。「王手は追う手、腹銀は縛る手」——王手をかけない一手が一番厳しいこともあるのです。',
+    });
+    return steps;
+  })(),
+};
+
+const chudangyoku: Lesson = {
+  id: 'chudan-gyoku',
+  title: '中段玉の寄せ',
+  category: '詰みの形',
+  summary:
+    '盤の中段に逃げ出した玉は捕まえにくい(格言「中段玉は寄せにくし」)。退路を断ってから包み込む寄せの設計図。',
+  steps: (() => {
+    const start = bare(
+      [
+        [5, 4, 'OU', GOTE],
+        [2, 3, 'HI', SENTE],
+        [5, 6, 'FU', SENTE],
+        [6, 6, 'FU', SENTE],
+        [4, 6, 'GI', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      { KI: 1 },
+    );
+    const steps = seq(
+      start,
+      '後手玉が5四の中段まで逃げ出してきました。しかし——注目は2三の飛車。玉の「帰り道」である三段目を横からまるごと封鎖しています。',
+      [
+        {
+          move: { to: sq(5, 5), drop: 'KI' },
+          caption: '▲5五金打！ 5六の歩が支えた、いわば「中段の頭金」です。',
+        },
+      ],
+    );
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '詰み！ 4三・5三・6三は飛車の横利き、4四・6四は金の斜め、4五は銀、6五は歩がカバー。「玉は包むように寄せよ」——退路の封鎖(飛車)→包囲(銀・歩)→とどめ(金)の3ステップでした。',
+    });
+    return steps;
+  })(),
+};
+
+// ---------- 囲いの崩し方 ----------
+
+const minoKuzushi: Lesson = {
+  id: 'mino-kuzushi',
+  title: '美濃崩し ▲7一銀',
+  category: '囲い崩し',
+  summary:
+    '横に堅い美濃囲いの急所は、玉のナナメ後ろ(7一)。銀→金のコンビネーションで一気に即詰みまで持っていく必修手順。',
+  steps: (() => {
+    const start = bare(
+      [
+        [8, 2, 'OU', GOTE],
+        [7, 2, 'GI', GOTE],
+        [6, 1, 'KI', GOTE],
+        [5, 2, 'KI', GOTE],
+        [9, 1, 'KY', GOTE],
+        [8, 1, 'KE', GOTE],
+        [9, 3, 'FU', GOTE],
+        [7, 3, 'FU', GOTE],
+        [6, 3, 'FU', GOTE],
+        [5, 3, 'FU', GOTE],
+        [2, 1, 'RY', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      { GI: 1, KI: 1 },
+    );
+    const steps = seq(
+      start,
+      '相手は鉄壁の美濃囲い。でも龍が一段目に入り、持ち駒に銀と金があれば——実はもう詰んでいます。',
+      [
+        {
+          move: { to: sq(7, 1), drop: 'GI' },
+          caption:
+            '▲7一銀打！ 銀の斜め後ろの利きで王手。△同金と取ると6一の守りが消え、一段目を通る龍の横利きで▲同龍!と美濃が崩壊します。',
+        },
+        { move: mv(8, 2, 9, 2), caption: '△9二玉と端に逃げるのが最善ですが——' },
+        {
+          move: { to: sq(8, 2), drop: 'KI' },
+          caption: '▲8二金打！ 7一の銀が金をしっかり支えています。',
+        },
+      ],
+    );
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '詰み！ 9一の香・9三の歩・8一の桂——美濃の駒たちが全部、玉自身の壁になってしまいました。▲7一銀→△9二玉→▲8二金は「美濃崩し」の必修コンビネーション。玉のナナメ後ろが美濃の泣きどころです。',
+    });
+    return steps;
+  })(),
+};
+
+const yaguraKuzushi: Lesson = {
+  id: 'yagura-kuzushi',
+  title: '矢倉崩しは端から',
+  category: '囲い崩し',
+  summary:
+    '金銀3枚の矢倉は正面から攻めても崩れない。守り駒が届かない端(1筋)に歩・香・桂を集中させるのが攻略の定石。',
+  steps: seq(
+    bare(
+      [
+        [2, 2, 'OU', GOTE],
+        [3, 2, 'KI', GOTE],
+        [3, 3, 'GI', GOTE],
+        [4, 3, 'KI', GOTE],
+        [1, 1, 'KY', GOTE],
+        [2, 1, 'KE', GOTE],
+        [1, 3, 'FU', GOTE],
+        [2, 3, 'FU', GOTE],
+        [3, 4, 'FU', GOTE],
+        [4, 4, 'FU', GOTE],
+        [1, 9, 'KY', SENTE],
+        [1, 5, 'FU', SENTE],
+        [3, 7, 'KE', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      {},
+    ),
+    '後手は完璧な金矢倉。でもよく見ると、金銀は2〜4筋に固まっていて1筋はガラ空きです。',
+    [
+      { move: mv(1, 5, 1, 4), caption: '▲1四歩！ 端から仕掛けます。' },
+      { move: mv(1, 3, 1, 4), caption: '△同歩。' },
+      { move: mv(1, 9, 1, 4), caption: '▲同香。香が一気に前線へ。' },
+      { move: { to: sq(1, 3), drop: 'FU' }, caption: '△1三歩と蓋をしますが…' },
+      {
+        move: mv(3, 7, 2, 5),
+        caption: '▲2五桂！ 1三の歩と3三の銀を同時に狙う跳躍。矢倉の守り駒は誰も端に届きません。',
+      },
+      { move: mv(3, 3, 2, 4), caption: '△2四銀と逃げますが、1三は守れません。' },
+      {
+        move: mv(2, 5, 1, 3, true),
+        caption: '▲1三桂成！ 王手です。',
+      },
+      { move: mv(1, 1, 1, 3), caption: '△同香。' },
+      {
+        move: mv(1, 4, 1, 3, true),
+        caption:
+          '▲同香成、ふたたび王手！ △同玉と取るしかありませんが、囲いを離れた玉は裸同然。「矢倉攻略は端から」——金銀の届かない場所を攻めるのが囲い崩しの大原則です。',
+      },
+    ],
+  ),
+};
+
 // ---------- 囲い ----------
 
 const yagura: Lesson = {
@@ -1006,6 +1192,10 @@ export const LESSONS: Lesson[] = [
   keiTakatobi,
   kinzoko,
   atamakin,
+  haragin,
+  chudangyoku,
+  minoKuzushi,
+  yaguraKuzushi,
   bogin,
   hayakuri,
   koshikake,
