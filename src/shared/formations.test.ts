@@ -68,6 +68,15 @@ describe('レッスンデータの整合性', () => {
     }
   });
 
+  it('必至・腹銀レッスン: 開始局面に即詰みは存在しない(だからこそ縛りに価値がある)', () => {
+    for (const id of ['hisshi', 'haragin']) {
+      const lesson = LESSONS.find((l) => l.id === id)!;
+      const start = lesson.steps[0].pos;
+      const immediateMate = legalMoves(start).some((m) => outcome(applyMove(start, m)).over);
+      expect(immediateMate, `${id}: 開始局面に1手詰みがあり、必至/縛りをかける意味がない`).toBe(false);
+    }
+  });
+
   it('必至・腹銀レッスン: 後手のどんな受け・逃げにも1手詰みが存在する', () => {
     // どちらも「決め手を放った直後(後手番)」の局面が対象
     for (const id of ['hisshi', 'haragin']) {
