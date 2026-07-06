@@ -353,6 +353,54 @@ const jujiBisha: Lesson = {
   ),
 };
 
+const akiOute: Lesson = {
+  id: 'aki-oute',
+  title: '開き王手（あきおうて）',
+  category: '手筋',
+  summary:
+    '駒がどいた瞬間、後ろの飛車や角の王手が「開通」する仕掛け。動いた駒は王手の陰でやりたい放題——駒取りも成りも自由自在。',
+  steps: (() => {
+    const start = bare(
+      [
+        [5, 1, 'OU', GOTE],
+        [4, 3, 'KA', GOTE],
+        [6, 1, 'KI', GOTE],
+        [1, 3, 'FU', GOTE],
+        [9, 3, 'FU', GOTE],
+        [5, 8, 'HI', SENTE],
+        [5, 4, 'GI', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      {},
+    );
+    const steps = seq(
+      start,
+      '5八の飛車の前に自分の銀がいて、今は飛車の利きが止まっています。この銀が動くと何が起きるでしょう？',
+      [
+        {
+          move: mv(5, 4, 4, 3),
+          caption:
+            '▲4三銀！ 角を取りながら、どいた瞬間に飛車の王手が開通する「開き王手」。後手は王手対応に追われ、角を取り返す余裕がありません(△4一玉や△6二玉と逃げても角得は確定)。',
+        },
+        {
+          move: mv(6, 1, 5, 2),
+          caption: '△5二金と合駒しますが、これが悲劇の始まり——',
+        },
+        {
+          move: mv(4, 3, 5, 2, true),
+          caption: '▲同銀成！ ふたたび王手、しかも今度は飛車が銀を支えています。これで詰みです。',
+        },
+      ],
+    );
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '開き王手は「動く駒」と「開通する駒」の二刀流。動いた駒は王手の陰にいるので相手は手が出せません。動いた駒自身も王手になる「両王手」なら、合駒すら不可能でさらに強力です。',
+    });
+    return steps;
+  })(),
+};
+
 const hashizeme: Lesson = {
   id: 'hashizeme',
   title: '端攻め',
@@ -862,6 +910,43 @@ const kakukoukan: Lesson = {
 
 // ---------- 詰みの形 ----------
 
+const ikkenRyu: Lesson = {
+  id: 'ikken-ryu',
+  title: '一間龍（いっけんりゅう）',
+  category: '詰みの形',
+  summary:
+    '龍が玉から斜めに一マスあけてにらむ形。「一間龍に金一枚」——持ち駒に金があれば、この形はもう詰んでいる。',
+  steps: (() => {
+    const start = bare(
+      [
+        [1, 1, 'OU', GOTE],
+        [1, 3, 'FU', GOTE],
+        [9, 3, 'FU', GOTE],
+        [3, 3, 'RY', SENTE],
+        [9, 9, 'OU', SENTE],
+      ],
+      { KI: 1 },
+    );
+    const steps = seq(
+      start,
+      '龍(3三)と玉(1一)が斜めに一マスあけて向かい合う「一間龍」。この距離感が詰みの合図です。',
+      [
+        {
+          move: { to: sq(2, 2), drop: 'KI' },
+          caption:
+            '▲2二金打！ 龍が斜めから金を支えているので△同玉と取れません。金自身が1二と2一の逃げ道を両方ふさいでいて——これで詰みです。',
+        },
+      ],
+    );
+    steps.push({
+      pos: steps[steps.length - 1].pos,
+      caption:
+        '「一間龍に金一枚」は終盤の超頻出パターン。王手で追い回すより、まず龍を玉の斜め一マス空きに配置することを目指しましょう。頭金(別レッスン)の親戚で、支えが縦(龍が真後ろ)なら頭金、斜めなら一間龍です。',
+    });
+    return steps;
+  })(),
+};
+
 const haragin: Lesson = {
   id: 'haragin',
   title: '腹銀（はらぎん）',
@@ -1027,7 +1112,7 @@ const minoKuzushi: Lesson = {
         {
           move: { to: sq(7, 1), drop: 'GI' },
           caption:
-            '▲7一銀打！ 銀の斜め後ろの利きで王手。△同金と取ると6一の守りが消え、一段目を通る龍の横利きで▲同龍!と美濃が崩壊します。',
+            '▲7一銀打！ 銀の斜め後ろの利きで王手。△同金には、一段目を通る龍の横利きで▲同龍！がふたたび王手になるのがミソ(△9二玉なら▲8二金で詰み、△同玉なら龍と引き換えに美濃が丸裸)。',
         },
         { move: mv(8, 2, 9, 2), caption: '△9二玉と端に逃げるのが最善ですが——' },
         {
@@ -1084,7 +1169,7 @@ const yaguraKuzushi: Lesson = {
       { move: mv(3, 3, 2, 4), caption: '△2四銀と逃げますが、1三は守れません。' },
       {
         move: mv(2, 5, 1, 3, true),
-        caption: '▲1三桂成！ 王手です。',
+        caption: '▲1三桂成！ 王手です(△3一玉と早逃げしても、成桂と香で端の攻めが続きます)。',
       },
       { move: mv(1, 1, 1, 3), caption: '△同香。' },
       {
@@ -1380,7 +1465,9 @@ export const LESSONS: Lesson[] = [
   hashizeme,
   keiTakatobi,
   kinzoko,
+  akiOute,
   atamakin,
+  ikkenRyu,
   haragin,
   chudangyoku,
   hisshi,

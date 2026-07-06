@@ -112,7 +112,15 @@ describe('レッスンデータの整合性', () => {
   });
 
   it('「詰み」と解説しているレッスンの最終局面は本当に詰み', () => {
-    for (const id of ['atama-kin', 'haragin', 'chudan-gyoku', 'mino-kuzushi', 'hisshi']) {
+    for (const id of [
+      'atama-kin',
+      'haragin',
+      'chudan-gyoku',
+      'mino-kuzushi',
+      'hisshi',
+      'ikken-ryu',
+      'aki-oute',
+    ]) {
       const lesson = LESSONS.find((l) => l.id === id)!;
       const last = lesson.steps[lesson.steps.length - 1].pos;
       const oc = outcome(last);
